@@ -1,0 +1,64 @@
+/**
+ * Daniel Builds — design tokens
+ * Fonts: Bricolage Grotesque + Source Serif 4 (Google Fonts, SIL OFL 1.1)
+ * Load in HTML:
+ *   <link rel="preconnect" href="https://fonts.googleapis.com" />
+ *   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ *   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap" rel="stylesheet" />
+ */
+:root {
+  /* Core palette — cool slate + warm paper + one sharp accent (no purple gradient) */
+  --db-color-bg: #f4f0e8;
+  --db-color-bg-elevated: #fffcf7;
+  --db-color-surface: #ffffff;
+  --db-color-ink: #1a1d21;
+  --db-color-ink-muted: #4a5058;
+  --db-color-ink-faint: #6e7682;
+  --db-color-border: #d9d0c4;
+  --db-color-border-strong: #b8ae9e;
+
+  /* Accent: deep teal — readable on light bg, works for links & focus */
+  --db-color-accent: #0d6b6b;
+  --db-color-accent-hover: #0a5555;
+  --db-color-accent-subtle: #e6f3f2;
+
+  /* Feedback */
+  --db-color-ok: #2d6a4f;
+  --db-color-warn: #b45309;
+  --db-color-bad: #9b2335;
+
+  /* Type scale (fluid) */
+  --db-font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --db-font-body: "Source Serif 4", "Georgia", "Times New Roman", serif;
+  --db-text-xs: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
+  --db-text-sm: clamp(0.875rem, 0.85rem + 0.2vw, 0.9375rem);
+  --db-text-base: clamp(1rem, 0.95rem + 0.25vw, 1.0625rem);
+  --db-text-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
+  --db-text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --db-text-2xl: clamp(1.5rem, 1.2rem + 1vw, 1.875rem);
+  --db-text-3xl: clamp(1.875rem, 1.4rem + 1.4vw, 2.5rem);
+  --db-text-4xl: clamp(2.25rem, 1.6rem + 2.2vw, 3.25rem);
+
+  --db-leading-tight: 1.2;
+  --db-leading-snug: 1.35;
+  --db-leading-body: 1.55;
+  --db-max-prose: 65ch;
+  --db-radius: 0.5rem;
+  --db-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 4px 12px rgb(0 0 0 / 0.05);
+  --db-motion: 180ms ease;
+}
+
+/* Dark (optional) — class on <html> or :root */
+[data-theme="dark"] {
+  --db-color-bg: #12141a;
+  --db-color-bg-elevated: #1a1d24;
+  --db-color-surface: #1f222b;
+  --db-color-ink: #e8eaed;
+  --db-color-ink-muted: #a8b0ba;
+  --db-color-ink-faint: #7a8494;
+  --db-color-border: #2e3440;
+  --db-color-border-strong: #3d4452;
+  --db-color-accent: #5ce0d6;
+  --db-color-accent-hover: #7ae8e0;
+  --db-color-accent-subtle: #152a2a;
+}

@@ -1,0 +1,120 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  /* Typography Defaults */
+  --font-sans: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Source Serif 4", ui-serif, Georgia, serif;
+
+  /* Default Theme: Daniel Builds (Teal) */
+  --color-brand-teal-50: oklch(96% 0.01 195);
+  --color-brand-teal-500: oklch(45.5% 0.08 195);
+  --color-brand-teal-950: oklch(12% 0.03 195);
+
+  --color-brand-ink-50: oklch(98% 0.005 240);
+  --color-brand-ink-500: oklch(45% 0.03 240);
+  --color-brand-ink-950: oklch(10% 0.005 240);
+
+  /* Semantic Default (Daniel Builds) */
+  --color-background: oklch(95% 0.01 75); /* Warm Paper */
+  --color-foreground: oklch(16% 0.02 240); /* Darker Ink */
+}
+
+/* Base Nuxt UI Mapping */
+@theme inline {
+  --color-primary-50: var(--color-brand-teal-50, oklch(96% 0.01 195));
+  --color-primary-500: var(--color-brand-teal-500, oklch(45.5% 0.08 195));
+  --color-primary-950: var(--color-brand-teal-950, oklch(12% 0.03 195));
+
+  --color-neutral-50: var(--color-brand-ink-50, oklch(98% 0.005 240));
+  --color-neutral-500: var(--color-brand-ink-500, oklch(46% 0.02 240));
+  --color-neutral-950: var(--color-brand-ink-950, oklch(10% 0.005 240));
+}
+
+/* Theme: Sport-Tech (Dark + Cyan) */
+[data-theme="sport-tech"] {
+  --color-background: oklch(10% 0.02 240); /* Slightly darker for more contrast */
+  --color-foreground: oklch(95% 0.02 240); /* Brighter white */
+  
+  --color-primary-50: oklch(92% 0.08 225);
+  --color-primary-100: oklch(88% 0.12 225);
+  --color-primary-500: oklch(78% 0.18 225); /* Increased chroma for vibrancy */
+  --color-primary-600: oklch(70% 0.18 225);
+  --color-primary-950: oklch(15% 0.10 225);
+  
+  --color-neutral-50: oklch(93% 0.02 240);
+  --color-neutral-500: oklch(50% 0.05 240);
+  --color-neutral-950: oklch(8% 0.01 240);
+}
+
+/* Theme: Brutalist (Raw Black/White/Red) */
+[data-theme="brutalist"] {
+  --color-background: oklch(8% 0 0); /* Dark background for contrast */
+  --color-foreground: oklch(98% 0 0); /* Near white text */
+  
+  --color-primary-50: oklch(95% 0 0);
+  --color-primary-500: oklch(92% 0 0); /* White for buttons */
+  --color-primary-600: oklch(85% 0 0);
+  --color-primary-950: oklch(5% 0 0);
+
+  --color-neutral-50: oklch(95% 0.05 25);
+  --color-neutral-500: oklch(65% 0.25 25); /* Brighter red accent */
+  --color-neutral-950: oklch(10% 0.10 25);
+  
+  --font-sans: "ui-sans-serif", "system-ui", sans-serif;
+}
+
+/* Theme: Editorial (Magazine Style) */
+[data-theme="editorial"] {
+  --color-background: oklch(95% 0.01 85); /* Bone */
+  --color-foreground: oklch(15% 0.02 240); /* Darker ink for better contrast */
+  
+  --color-primary-50: oklch(94% 0.03 75);
+  --color-primary-500: oklch(52% 0.12 75); /* Gold - increased chroma */
+  --color-primary-600: oklch(42% 0.12 75);
+  --color-primary-950: oklch(12% 0.05 75);
+
+  --color-neutral-50: oklch(94% 0.005 240);
+  --color-neutral-500: oklch(45% 0.03 240);
+  --color-neutral-950: oklch(8% 0.01 240);
+}
+
+/* Theme: Retro-Futurism (Neon Navy) */
+[data-theme="retro-futurism"] {
+  --color-background: oklch(15% 0.05 260); /* Navy */
+  --color-foreground: oklch(93% 0.18 195); /* Brighter cyan for WCAG AA compliance */
+  
+  --color-primary-50: oklch(92% 0.15 195);
+  --color-primary-500: oklch(88% 0.25 195); /* Stronger cyan neon */
+  --color-primary-600: oklch(80% 0.25 195);
+  --color-primary-950: oklch(20% 0.12 195);
+
+  --color-neutral-50: oklch(92% 0.08 350);
+  --color-neutral-500: oklch(68% 0.30 350); /* Brighter pink neon */
+  --color-neutral-950: oklch(18% 0.12 350);
+}
+
+/* Theme: Organic (Forest/Sustainable) */
+[data-theme="organic"] {
+  --color-background: oklch(96% 0.02 85); /* Cream */
+  --color-foreground: oklch(22% 0.06 135); /* Darker forest */
+  
+  --color-primary-50: oklch(93% 0.08 135);
+  --color-primary-500: oklch(42% 0.18 135); /* Green Leaf - increased chroma */
+  --color-primary-600: oklch(32% 0.18 135);
+  --color-primary-950: oklch(12% 0.10 135);
+
+  --color-neutral-50: oklch(93% 0.03 135);
+  --color-neutral-500: oklch(40% 0.12 135);
+  --color-neutral-950: oklch(8% 0.05 135);
+}
+
+@layer base {
+  body {
+    @apply font-serif bg-background text-foreground transition-colors duration-500;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold tracking-tight;
+  }
+}

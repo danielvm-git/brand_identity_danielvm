@@ -1,28 +1,46 @@
 # Daniel Builds — brand notes
 
 **Domain:** [danielvm.net](https://danielvm.net)  
-**Tokens:** `brand/tokens.css`  
-**Preview:** open `index.html` in a browser, or from this folder run `python3 -m http.server 8080` and visit <http://localhost:8080>
+**Tokens:** `assets/css/main.css` (Tailwind v4 compliant)
+
+## Multi-Theme System
+This brand identity supports multiple aesthetic directions ("themes") to adapt to different projects while maintaining a consistent design language.
+
+### 1. Daniel Builds (Default)
+- **Aesthetic:** Studio / Craft / Warm
+- **Usage:** Main personal brand and professional portfolio.
+- **Key Colors:** Deep Teal (#0d6b6b) + Warm Paper (#f4f0e8).
+
+### 2. Sport-Tech
+- **Aesthetic:** High-Performance / Premium Tech
+- **Usage:** Technical tools, performance tracking, e-commerce.
+- **Key Colors:** Cyan (#06b6d4) + Dark Slate (#0e1219).
+
+### 3. Brutalist
+- **Aesthetic:** Raw / Minimal / Bold
+- **Usage:** Art projects, experimental blogs, high-impact landing pages.
+- **Key Colors:** Pure Black + Pure White + Signal Red (#ef4444).
+
+### 4. Editorial
+- **Aesthetic:** Magazine / Literary
+- **Usage:** Documentation, long-form writing, technical whitepapers.
+- **Key Colors:** Gold (#8b7355) + Bone (#f5f1e8).
+
+### 5. Retro-Futurism
+- **Aesthetic:** Cyber / 90s Neon
+- **Usage:** Creative coding, interactive experiments, community hubs.
+- **Key Colors:** Neon Cyan (#00f0ff) + Navy (#1a1a2e) + Neon Pink (#ff006e).
+
+### 6. Organic
+- **Aesthetic:** Sustainable / Natural
+- **Usage:** Community initiatives, environmental projects, soft UI.
+- **Key Colors:** Forest Green (#2d5016) + Cream (#fef3e2).
+
+## Technical Implementation
+- **Color Space:** All colors are defined using **OKLCH** for perceptual uniformity.
+- **Compatibility:** Fully compliant with Nuxt UI v3 and Tailwind v4.
+- **Switching:** Controlled via the `data-theme` attribute on the root element.
 
 ## Typography
-
-| Role | Family | Rationale |
-|------|--------|-----------|
-| **Display (logo, h1–h2)** | [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) | Open source (OFL), variable, strong personality without “template” vibes. |
-| **Body (paragraphs, UI)** | [Source Serif 4](https://fonts.google.com/specimen/Source+Serif+4) | OFL, excellent reading on long text, well-hinted, broad browser support. |
-
-**Loading:** use Google Fonts’ combined `link` in `tokens.css` header, `font-display: swap`, and fallbacks: `ui-sans-serif` / `Georgia` in CSS.
-
-**Avoid for this brand:** defaulting to Inter, Roboto, or Arial as the *main* look — the pair above is the identity.
-
-## Color
-
-- **Background / paper:** warm off-white `#f4f0e8` so the site feels like a studio desk, not a cold SaaS.
-- **Ink:** near-black slate `#1a1d21` for text (strong contrast on off-white, WCAG-friendly for body size).
-- **Accent:** deep teal `#0d6b6b` for links, focus, and primary actions — distinctive, not the usual blue or purple-gradient cliché; pairs well with warm paper.
-- **Dark mode:** optional; flip in `data-theme="dark"` in tokens.
-
-## Non-negotiables (agents)
-
-- Use CSS variables from `brand/tokens.css` — do not introduce a second primary accent in UI without updating tokens.
-- Keep “Daniel Builds” and danielvm.net naming consistent in visible copy and meta.
+- **Display:** [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) (Sans)
+- **Body:** [Source Serif 4](https://fonts.google.com/specimen/Source+Serif+4) (Serif)

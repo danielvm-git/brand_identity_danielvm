@@ -18,6 +18,23 @@
   /* Semantic Default (Daniel Builds) */
   --color-background: oklch(93% 0.01 75); /* Warm Paper */
   --color-foreground: oklch(10% 0.02 240); /* Deep Ink - WCAG AA */
+  --color-primary-content: oklch(93% 0.01 75); /* Cream text on Teal */
+}
+
+/* Explicit Default Theme Block (prevents inheritance issues in preview cards) */
+[data-theme=""] {
+  --color-background: oklch(93% 0.01 75);
+  --color-foreground: oklch(10% 0.02 240);
+  
+  --color-primary-50: var(--color-brand-teal-50);
+  --color-primary-500: var(--color-brand-teal-500);
+  --color-primary-950: var(--color-brand-teal-950);
+
+  --color-neutral-50: var(--color-brand-ink-50);
+  --color-neutral-500: var(--color-brand-ink-500);
+  --color-neutral-950: var(--color-brand-ink-950);
+  
+  --color-primary-content: oklch(93% 0.01 75);
 }
 
 /* Base Nuxt UI Mapping */
@@ -41,6 +58,7 @@
   --color-primary-500: oklch(78% 0.18 225); /* Increased chroma for vibrancy */
   --color-primary-600: oklch(70% 0.18 225);
   --color-primary-950: oklch(15% 0.10 225);
+  --color-primary-content: oklch(10% 0.02 240); /* Dark text on Cyan */
   
   --color-neutral-50: oklch(93% 0.02 240);
   --color-neutral-500: oklch(50% 0.05 240);
@@ -56,6 +74,7 @@
   --color-primary-500: oklch(92% 0 0); /* White for buttons */
   --color-primary-600: oklch(85% 0 0);
   --color-primary-950: oklch(5% 0 0);
+  --color-primary-content: oklch(8% 0 0); /* Black text on White */
 
   --color-neutral-50: oklch(95% 0.05 25);
   --color-neutral-500: oklch(65% 0.25 25); /* Brighter red accent */
@@ -73,6 +92,7 @@
   --color-primary-500: oklch(52% 0.12 75); /* Gold - increased chroma */
   --color-primary-600: oklch(42% 0.12 75);
   --color-primary-950: oklch(12% 0.05 75);
+  --color-primary-content: oklch(95% 0.01 85); /* Bone text on Gold */
 
   --color-neutral-50: oklch(94% 0.005 240);
   --color-neutral-500: oklch(45% 0.03 240);
@@ -88,6 +108,7 @@
   --color-primary-500: oklch(88% 0.25 195); /* Stronger cyan neon */
   --color-primary-600: oklch(80% 0.25 195);
   --color-primary-950: oklch(20% 0.12 195);
+  --color-primary-content: oklch(15% 0.05 260); /* Navy text on Cyan */
 
   --color-neutral-50: oklch(92% 0.08 350);
   --color-neutral-500: oklch(68% 0.30 350); /* Brighter pink neon */
@@ -103,6 +124,7 @@
   --color-primary-500: oklch(42% 0.18 135); /* Green Leaf - increased chroma */
   --color-primary-600: oklch(32% 0.18 135);
   --color-primary-950: oklch(12% 0.10 135);
+  --color-primary-content: oklch(96% 0.02 85); /* Cream text on Green */
 
   --color-neutral-50: oklch(93% 0.03 135);
   --color-neutral-500: oklch(40% 0.12 135);

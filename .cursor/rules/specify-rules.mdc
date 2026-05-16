@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+
+<!-- SPECKIT START -->
+Follow **`AGENT.md`** at repo root first — policies, paths, slash-command mapping,
+and Spec-Ket layout. Supplement with **`DOCS/`** (Polaris, security, architecture,
+testing) and `.specify/memory/constitution.md`.
+<!-- SPECKIT END -->

@@ -1,0 +1,17 @@
+# Workflow setup policy — used by scripts/workflow-setup.sh (layer checks).
+# MCP lists are informational for agents; the script treats unknown MCP as WARN unless wired below.
+
+require_git_remote: false
+
+required_mcp: []
+
+optional_mcp:
+  - user-figma
+  - user-neon
+  - user-nuxt
+  - cursor-ide-browser
+
+# Spec-Kit / presets
+require_spec_kit_structure: true
+require_presets:
+  - brand-sdd

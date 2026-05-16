@@ -1,0 +1,66 @@
+schema_version: "1.0"
+
+preset:
+  id: "brand-sdd"
+  name: "Spec SDD + XP + GSD hooks (danielvm)"
+  version: "0.1.1"
+  description: "Backlog/release, TDD-by-story, bugfix discipline, CR/scope reports, workflow setup checks"
+  author: "danielvm"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.6.0"
+
+provides:
+  templates:
+    # NOTE: Command names MUST stay two-part after speckit (speckit.foo-bar). Names like speckit.a.b are treated as extension overrides.
+    - type: "command"
+      name: "speckit.workflow-setup"
+      file: "commands/speckit.workflow-setup.md"
+      description: "Layered agentic stack verification (PASS/WARN/FAIL)"
+
+    - type: "command"
+      name: "speckit.specify-backlog"
+      file: "commands/speckit.specify-backlog.md"
+      description: "Interactive backlog + RELEASE_PLAN from constitution + client assets"
+
+    - type: "command"
+      name: "speckit.story-execute"
+      file: "commands/speckit.story-execute.md"
+      description: "TDD + implementation + tests within one story (Spec-Kit aligned)"
+
+    - type: "command"
+      name: "speckit.bugfix-dev"
+      file: "commands/speckit.bugfix-dev.md"
+      description: "Structured bugfix template; one conventional commit when green"
+
+    - type: "command"
+      name: "speckit.change-request"
+      file: "commands/speckit.change-request.md"
+      description: "Client-only change request log + routing to scope management"
+
+    - type: "command"
+      name: "speckit.scope-management"
+      file: "commands/speckit.scope-management.md"
+      description: "Impact analysis (PF/BCP/timeline) — user decides what to apply"
+
+    - type: "command"
+      name: "speckit.daily-report"
+      file: "commands/speckit.daily-report.md"
+      description: "Daily stakeholder report to versioned markdown"
+
+    - type: "command"
+      name: "speckit.weekly-report"
+      file: "commands/speckit.weekly-report.md"
+      description: "Weekly stakeholder report to versioned markdown"
+
+    - type: "command"
+      name: "speckit.verify-work"
+      file: "commands/speckit.verify-work.md"
+      description: "Conversational UAT gate (GSD verify-work pattern, local agent prompt)"
+
+tags:
+  - "sdd"
+  - "xp"
+  - "backlog"
+  - "release-plan"

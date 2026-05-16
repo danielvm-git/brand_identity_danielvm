@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  id="Definitions_SDD_Workflow_v0"
+  targetNamespace="http://brand_identity_danielvm.local/planning/sdd-workflow"
+  exporter="Cursor Agent"
+  exporterVersion="v0">
+  <bpmn:documentation>PRD: prd-sdd-workflow-methodology.md — fluxo SDD (Spec-Kit + presets + XP complementar + slicing estilo GSD-2). v0 para edição manual em Camunda/bpmn.io.</bpmn:documentation>
+
+  <bpmn:collaboration id="Collaboration_SDD">
+    <bpmn:participant id="Participant_Equipa" name="Equipa / agentes (SDD+XP)" processRef="Process_Core"/>
+    <bpmn:participant id="Participant_Cliente" name="Cliente (governança)" processRef="Process_Cliente"/>
+    <bpmn:messageFlow id="Flow_CR_to_Scope" name="CR formal" sourceRef="Task_RegistarCR" targetRef="Task_ScopeMgmt"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_Cliente" name="Cliente — Change Request" isExecutable="false">
+    <bpmn:startEvent id="Start_Cliente" name="Pedido de mudança"/>
+    <bpmn:userTask id="Task_RegistarCR" name="Registar CR (/change-request)">
+      <bpmn:documentation>Apenas cliente inicia CR formal; não substitui backlog sem decisão.</bpmn:documentation>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_CR_Encaminhado" name="CR encaminhado para análise"/>
+    <bpmn:sequenceFlow id="Sf_CR_1" sourceRef="Start_Cliente" targetRef="Task_RegistarCR"/>
+    <bpmn:sequenceFlow id="Sf_CR_2" sourceRef="Task_RegistarCR" targetRef="End_CR_Encaminhado"/>
+  </bpmn:process>
+
+  <bpmn:process id="Process_Core" name="SDD workflow core" isExecutable="false">
+
+    <bpmn:laneSet id="LaneSet_Core">
+      <bpmn:lane id="Lane_Setup_Backlog" name="Setup &amp; backlog">
+        <bpmn:flowNodeRef>Start_Inicio</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_WorkflowSetup</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ConstitutionSpecKit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_BacklogReleasePlan</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Plan_Impl" name="Planeamento &amp; execução (XP/TDD)">
+        <bpmn:flowNodeRef>Task_MilestonePlan</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_TDD_Implement</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Quality" name="Qualidade &amp; UAT">
+        <bpmn:flowNodeRef>Task_AutoTests</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_TestsOk</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Bugfix</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_UAT_VerifyWork</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_UATOk</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Git_Docs" name="Git, docs &amp; release">
+        <bpmn:flowNodeRef>Task_UpdateDocs</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_ScopeTrigger</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ScopeMgmt</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_EpicoCompleto</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ShipEpico</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_MaisTrabalho</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Fim</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="Start_Inicio" name="Projeto / método a operacionalizar"/>
+
+    <bpmn:userTask id="Task_WorkflowSetup" name="/workflow.setup">
+      <bpmn:documentation>Checklist por camadas (FAIL/WARN); MCP opcional; invariantes do método.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_ConstitutionSpecKit" name="Constitution &amp; base Spec-Kit">
+      <bpmn:documentation>specify + constitution + templates; presets empilhados para lacunas.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_BacklogReleasePlan" name="/specify.backlog — BACKLOG + RELEASE_PLAN">
+      <bpmn:documentation>Épicos ↔ semver planeada (v0.1.0…); histórias com PF/BCP/SNAP/NFR (sem números até método definido); milestones agrupam épicos.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_MilestonePlan" name="Planeamento milestone (PLAN.md)">
+      <bpmn:documentation>Aprovação/ajuste humano antes de executar.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_TDD_Implement" name="/story.execute — TDD + implement">
+      <bpmn:documentation>XP: feedback curto; commits pequenos por história/task (Conventional Commits).</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_AutoTests" name="Testes automatizados (CI/local)"/>
+
+    <bpmn:exclusiveGateway id="GW_TestsOk" name="Testes OK?" default="Sf_Test_No"/>
+
+    <bpmn:userTask id="Task_Bugfix" name="/bugfix.dev — defeito estruturado + commit ao fechar">
+      <bpmn:documentation>Secções ### Error Summary, Root Cause, Fix Applied, Prevention, Test Coverage; ### Commit se verde.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_UAT_VerifyWork" name="UAT humano (verify-work GSD)">
+      <bpmn:documentation>No fim dos testes da fatia/milestone acordada.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_UATOk" name="UAT aceite?" default="Sf_UAT_No"/>
+
+    <bpmn:userTask id="Task_UpdateDocs" name="Actualizar docs &amp; estado do projeto">
+      <bpmn:documentation>AGENT.md entrada única + artefactos satélite; narrativa para stakeholders.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_ScopeTrigger" name="Gatilho gestão escopo?" default="Sf_Scope_Skip"/>
+
+    <bpmn:userTask id="Task_ScopeMgmt" name="/scope-management — impacto + decisão humana">
+      <bpmn:documentation>Gatilhos: fim milestone; manual; após CR (análise em tempo real). Calcula PF/BCP/timeline; não aplica ao roadmap sem decisão.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_EpicoCompleto" name="Épico completo &amp; UAT aceite ao nível acordado?" default="Sf_Epico_Nao"/>
+
+    <bpmn:userTask id="Task_ShipEpico" name="Ship épico — PR → merge main → tag v0.x.0">
+      <bpmn:documentation>semantic-release-baby ou equivalente quando tooling existir; ship por épico, não obrigatoriamente por história isolada.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_MaisTrabalho" name="Próximo milestone/épico?" default="Sf_Continuar"/>
+
+    <bpmn:endEvent id="End_Fim" name="Encerramento ou pausa"/>
+
+    <bpmn:textAnnotation id="Annot_XP">
+      <bpmn:text>XP complementar: inspirado em BPMN agile público — não obriga uso deste diagrama no dia-a-dia.</bpmn:text>
+    </bpmn:textAnnotation>
+
+    <bpmn:textAnnotation id="Annot_Metrics">
+      <bpmn:text>Opcional: tempos por tarefa estilo GSD-2 para calibrar estimativas — decisão explícita no método.</bpmn:text>
+    </bpmn:textAnnotation>
+
+    <bpmn:association id="Assoc_AnnotXP" associationDirection="None" sourceRef="Task_TDD_Implement" targetRef="Annot_XP"/>
+    <bpmn:association id="Assoc_AnnotMetrics" associationDirection="None" sourceRef="Task_UpdateDocs" targetRef="Annot_Metrics"/>
+
+    <!-- Fluxo principal -->
+    <bpmn:sequenceFlow id="Sf_01" sourceRef="Start_Inicio" targetRef="Task_WorkflowSetup"/>
+    <bpmn:sequenceFlow id="Sf_02" sourceRef="Task_WorkflowSetup" targetRef="Task_ConstitutionSpecKit"/>
+    <bpmn:sequenceFlow id="Sf_03" sourceRef="Task_ConstitutionSpecKit" targetRef="Task_BacklogReleasePlan"/>
+    <bpmn:sequenceFlow id="Sf_04" sourceRef="Task_BacklogReleasePlan" targetRef="Task_MilestonePlan"/>
+    <bpmn:sequenceFlow id="Sf_05" sourceRef="Task_MilestonePlan" targetRef="Task_TDD_Implement"/>
+    <bpmn:sequenceFlow id="Sf_06" sourceRef="Task_TDD_Implement" targetRef="Task_AutoTests"/>
+    <bpmn:sequenceFlow id="Sf_07" sourceRef="Task_AutoTests" targetRef="GW_TestsOk"/>
+
+    <bpmn:sequenceFlow id="Sf_Test_Yes" name="Sim" sourceRef="GW_TestsOk" targetRef="Task_UAT_VerifyWork"/>
+    <bpmn:sequenceFlow id="Sf_Test_No" name="Não" sourceRef="GW_TestsOk" targetRef="Task_Bugfix"/>
+    <bpmn:sequenceFlow id="Sf_Bugfix_Back" sourceRef="Task_Bugfix" targetRef="Task_AutoTests"/>
+
+    <bpmn:sequenceFlow id="Sf_08" sourceRef="Task_UAT_VerifyWork" targetRef="GW_UATOk"/>
+
+    <bpmn:sequenceFlow id="Sf_UAT_Yes" name="Sim" sourceRef="GW_UATOk" targetRef="Task_UpdateDocs"/>
+    <bpmn:sequenceFlow id="Sf_UAT_No" name="Não" sourceRef="GW_UATOk" targetRef="Task_Bugfix"/>
+
+    <bpmn:sequenceFlow id="Sf_09" sourceRef="Task_UpdateDocs" targetRef="GW_ScopeTrigger"/>
+
+    <bpmn:sequenceFlow id="Sf_Scope_Run" name="Sim (gatilho ou CR pendente)" sourceRef="GW_ScopeTrigger" targetRef="Task_ScopeMgmt"/>
+    <bpmn:sequenceFlow id="Sf_Scope_Skip" name="Não" sourceRef="GW_ScopeTrigger" targetRef="GW_EpicoCompleto"/>
+
+    <bpmn:sequenceFlow id="Sf_10" sourceRef="Task_ScopeMgmt" targetRef="GW_EpicoCompleto"/>
+
+    <bpmn:sequenceFlow id="Sf_Epico_Sim" name="Sim" sourceRef="GW_EpicoCompleto" targetRef="Task_ShipEpico"/>
+    <bpmn:sequenceFlow id="Sf_Epico_Nao" name="Não" sourceRef="GW_EpicoCompleto" targetRef="GW_MaisTrabalho"/>
+
+    <bpmn:sequenceFlow id="Sf_11" sourceRef="Task_ShipEpico" targetRef="GW_MaisTrabalho"/>
+
+    <bpmn:sequenceFlow id="Sf_Continuar" name="Sim" sourceRef="GW_MaisTrabalho" targetRef="Task_MilestonePlan"/>
+    <bpmn:sequenceFlow id="Sf_Terminar" name="Não" sourceRef="GW_MaisTrabalho" targetRef="End_Fim"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SDD">
+    <bpmndi:BPMNPlane id="BPMNPlane_Core" bpmnElement="Collaboration_SDD">
+
+      <bpmndi:BPMNShape id="Shape_Participant_Equipa" bpmnElement="Participant_Equipa" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1400" height="520"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Participant_Cliente" bpmnElement="Participant_Cliente" isHorizontal="true">
+        <dc:Bounds x="160" y="620" width="420" height="160"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Lane backgrounds optional in DI; omit inner lanes for brevity -->
+
+      <bpmndi:BPMNShape id="Shape_Start_Inicio" bpmnElement="Start_Inicio">
+        <dc:Bounds x="212" y="232" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_WorkflowSetup" bpmnElement="Task_WorkflowSetup">
+        <dc:Bounds x="290" y="210" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ConstitutionSpecKit" bpmnElement="Task_ConstitutionSpecKit">
+        <dc:Bounds x="450" y="210" width="130" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_BacklogReleasePlan" bpmnElement="Task_BacklogReleasePlan">
+        <dc:Bounds x="620" y="210" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_MilestonePlan" bpmnElement="Task_MilestonePlan">
+        <dc:Bounds x="800" y="210" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_TDD_Implement" bpmnElement="Task_TDD_Implement">
+        <dc:Bounds x="960" y="210" width="130" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AutoTests" bpmnElement="Task_AutoTests">
+        <dc:Bounds x="1130" y="210" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW_TestsOk" bpmnElement="GW_TestsOk" isMarkerVisible="true">
+        <dc:Bounds x="1285" y="225" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Bugfix" bpmnElement="Task_Bugfix">
+        <dc:Bounds x="1265" y="360" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_UAT" bpmnElement="Task_UAT_VerifyWork">
+        <dc:Bounds x="1380" y="210" width="130" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW_UATOk" bpmnElement="GW_UATOk" isMarkerVisible="true">
+        <dc:Bounds x="1555" y="225" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_UpdateDocs" bpmnElement="Task_UpdateDocs">
+        <dc:Bounds x="1645" y="210" width="130" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW_ScopeTrigger" bpmnElement="GW_ScopeTrigger" isMarkerVisible="true">
+        <dc:Bounds x="1815" y="225" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ScopeMgmt" bpmnElement="Task_ScopeMgmt">
+        <dc:Bounds x="1795" y="360" width="130" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW_EpicoCompleto" bpmnElement="GW_EpicoCompleto" isMarkerVisible="true">
+        <dc:Bounds x="1905" y="225" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ShipEpico" bpmnElement="Task_ShipEpico">
+        <dc:Bounds x="1995" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW_MaisTrabalho" bpmnElement="GW_MaisTrabalho" isMarkerVisible="true">
+        <dc:Bounds x="2175" y="225" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End_Fim" bpmnElement="End_Fim">
+        <dc:Bounds x="2272" y="232" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Start_Cliente" bpmnElement="Start_Cliente">
+        <dc:Bounds x="212" y="682" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_RegistarCR" bpmnElement="Task_RegistarCR">
+        <dc:Bounds x="300" y="660" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End_CR_Encaminhado" bpmnElement="End_CR_Encaminhado">
+        <dc:Bounds x="472" y="682" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Annot_XP" bpmnElement="Annot_XP">
+        <dc:Bounds x="930" y="70" width="220" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Annot_Metrics" bpmnElement="Annot_Metrics">
+        <dc:Bounds x="1580" y="70" width="260" height="70"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Message flows -->
+      <bpmndi:BPMNEdge id="Edge_Message_CR" bpmnElement="Flow_CR_to_Scope">
+        <di:waypoint x="420" y="700"/>
+        <di:waypoint x="1860" y="400"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Sequence flows (approximate polyline) -->
+      <bpmndi:BPMNEdge id="Edge_Sf_01" bpmnElement="Sf_01">
+        <di:waypoint x="248" y="250"/>
+        <di:waypoint x="290" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_02" bpmnElement="Sf_02">
+        <di:waypoint x="410" y="250"/>
+        <di:waypoint x="450" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_03" bpmnElement="Sf_03">
+        <di:waypoint x="580" y="250"/>
+        <di:waypoint x="620" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_04" bpmnElement="Sf_04">
+        <di:waypoint x="760" y="250"/>
+        <di:waypoint x="800" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_05" bpmnElement="Sf_05">
+        <di:waypoint x="920" y="250"/>
+        <di:waypoint x="960" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_06" bpmnElement="Sf_06">
+        <di:waypoint x="1090" y="250"/>
+        <di:waypoint x="1130" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_07" bpmnElement="Sf_07">
+        <di:waypoint x="1240" y="250"/>
+        <di:waypoint x="1285" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_Test_Yes" bpmnElement="Sf_Test_Yes">
+        <di:waypoint x="1335" y="250"/>
+        <di:waypoint x="1380" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_Test_No" bpmnElement="Sf_Test_No">
+        <di:waypoint x="1310" y="275"/>
+        <di:waypoint x="1310" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_Bugfix_Back" bpmnElement="Sf_Bugfix_Back">
+        <di:waypoint x="1265" y="400"/>
+        <di:waypoint x="1185" y="400"/>
+        <di:waypoint x="1185" y="290"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_08" bpmnElement="Sf_08">
+        <di:waypoint x="1510" y="250"/>
+        <di:waypoint x="1555" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_UAT_Yes" bpmnElement="Sf_UAT_Yes">
+        <di:waypoint x="1605" y="250"/>
+        <di:waypoint x="1645" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_UAT_No" bpmnElement="Sf_UAT_No">
+        <di:waypoint x="1580" y="275"/>
+        <di:waypoint x="1580" y="400"/>
+        <di:waypoint x="1385" y="400"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_09" bpmnElement="Sf_09">
+        <di:waypoint x="1775" y="250"/>
+        <di:waypoint x="1815" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_Scope_Run" bpmnElement="Sf_Scope_Run">
+        <di:waypoint x="1840" y="275"/>
+        <di:waypoint x="1860" y="320"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_Scope_Skip" bpmnElement="Sf_Scope_Skip">
+        <di:waypoint x="1865" y="250"/>
+        <di:waypoint x="1905" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_10" bpmnElement="Sf_10">
+        <di:waypoint x="1860" y="360"/>
+        <di:waypoint x="1930" y="360"/>
+        <di:waypoint x="1930" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_Epico_Sim" bpmnElement="Sf_Epico_Sim">
+        <di:waypoint x="1930" y="225"/>
+        <di:waypoint x="2065" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_Epico_Nao" bpmnElement="Sf_Epico_Nao">
+        <di:waypoint x="1955" y="250"/>
+        <di:waypoint x="2175" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_11" bpmnElement="Sf_11">
+        <di:waypoint x="2065" y="210"/>
+        <di:waypoint x="2175" y="225"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_Continuar" bpmnElement="Sf_Continuar">
+        <di:waypoint x="2200" y="275"/>
+        <di:waypoint x="2200" y="620"/>
+        <di:waypoint x="860" y="620"/>
+        <di:waypoint x="860" y="290"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_Terminar" bpmnElement="Sf_Terminar">
+        <di:waypoint x="2225" y="250"/>
+        <di:waypoint x="2272" y="250"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_Sf_CR_1" bpmnElement="Sf_CR_1">
+        <di:waypoint x="248" y="700"/>
+        <di:waypoint x="300" y="700"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Sf_CR_2" bpmnElement="Sf_CR_2">
+        <di:waypoint x="420" y="700"/>
+        <di:waypoint x="472" y="700"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_Assoc_XP" bpmnElement="Assoc_AnnotXP">
+        <di:waypoint x="1040" y="210"/>
+        <di:waypoint x="1040" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Assoc_Metrics" bpmnElement="Assoc_AnnotMetrics">
+        <di:waypoint x="1710" y="210"/>
+        <di:waypoint x="1710" y="140"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

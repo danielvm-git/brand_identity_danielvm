@@ -25,6 +25,7 @@ done
 
 # Get script directory and load common functions
 SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091 # common.sh is sourced at runtime
 source "$SCRIPT_DIR/common.sh"
 
 # Get all paths and variables from common functions

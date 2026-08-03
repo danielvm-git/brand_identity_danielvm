@@ -166,17 +166,21 @@ check_existing_branches() {
     local skip_fetch="${2:-false}"
 
     if [ "$skip_fetch" = true ]; then
-        local highest_remote=$(get_highest_from_remote_refs)
-        local highest_branch=$(get_highest_from_branches)
+        local highest_remote
+        highest_remote=$(get_highest_from_remote_refs)
+        local highest_branch
+        highest_branch=$(get_highest_from_branches)
         if [ "$highest_remote" -gt "$highest_branch" ]; then
             highest_branch=$highest_remote
         fi
     else
         git fetch --all --prune >/dev/null 2>&1 || true
-        local highest_branch=$(get_highest_from_branches)
+        local highest_branch
+        highest_branch=$(get_highest_from_branches)
     fi
 
-    local highest_spec=$(get_highest_from_specs "$specs_dir")
+    local highest_spec
+    highest_spec=$(get_highest_from_specs "$specs_dir")
 
     local max_num=$highest_branch
     if [ "$highest_spec" -gt "$max_num" ]; then
@@ -219,12 +223,15 @@ _common_loaded=false
 _PROJECT_ROOT=$(_find_project_root "$SCRIPT_DIR") || true
 
 if [ -n "$_PROJECT_ROOT" ] && [ -f "$_PROJECT_ROOT/.specify/scripts/bash/common.sh" ]; then
+    # shellcheck disable=SC1091 # common.sh is sourced at runtime
     source "$_PROJECT_ROOT/.specify/scripts/bash/common.sh"
     _common_loaded=true
 elif [ -n "$_PROJECT_ROOT" ] && [ -f "$_PROJECT_ROOT/scripts/bash/common.sh" ]; then
+    # shellcheck disable=SC1091 # common.sh is sourced at runtime
     source "$_PROJECT_ROOT/scripts/bash/common.sh"
     _common_loaded=true
 elif [ -f "$SCRIPT_DIR/git-common.sh" ]; then
+    # shellcheck disable=SC1091 # git-common.sh is sourced at runtime
     source "$SCRIPT_DIR/git-common.sh"
     _common_loaded=true
 fi
@@ -269,7 +276,8 @@ generate_branch_name() {
 
     local stop_words="^(i|a|an|the|to|for|of|in|on|at|by|with|from|is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|should|could|can|may|might|must|shall|this|that|these|those|my|your|our|their|want|need|add|get|set)$"
 
-    local clean_name=$(echo "$description" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/ /g')
+    local clean_name
+    clean_name=$(echo "$description" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/ /g')
 
     local meaningful_words=()
     for word in $clean_name; do
@@ -297,7 +305,8 @@ generate_branch_name() {
         done
         echo "$result"
     else
-        local cleaned=$(clean_branch_name "$description")
+        local cleaned
+        cleaned=$(clean_branch_name "$description")
         echo "$cleaned" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//'
     fi
 }
@@ -309,10 +318,10 @@ if [ -n "${GIT_BRANCH_NAME:-}" ]; then
     # Check timestamp pattern first (YYYYMMDD-HHMMSS-) since it also matches the simpler ^[0-9]+ pattern
     if echo "$BRANCH_NAME" | grep -Eq '^[0-9]{8}-[0-9]{6}-'; then
         FEATURE_NUM=$(echo "$BRANCH_NAME" | grep -Eo '^[0-9]{8}-[0-9]{6}')
-        BRANCH_SUFFIX="${BRANCH_NAME#${FEATURE_NUM}-}"
+        BRANCH_SUFFIX="${BRANCH_NAME#"${FEATURE_NUM}"-}"
     elif echo "$BRANCH_NAME" | grep -Eq '^[0-9]+-'; then
         FEATURE_NUM=$(echo "$BRANCH_NAME" | grep -Eo '^[0-9]+')
-        BRANCH_SUFFIX="${BRANCH_NAME#${FEATURE_NUM}-}"
+        BRANCH_SUFFIX="${BRANCH_NAME#"${FEATURE_NUM}"-}"
     else
         FEATURE_NUM="$BRANCH_NAME"
         BRANCH_SUFFIX="$BRANCH_NAME"
@@ -367,7 +376,7 @@ elif [ "$BRANCH_BYTE_LEN" -gt $MAX_BRANCH_LENGTH ]; then
     MAX_SUFFIX_LENGTH=$((MAX_BRANCH_LENGTH - PREFIX_LENGTH))
 
     TRUNCATED_SUFFIX=$(echo "$BRANCH_SUFFIX" | cut -c1-$MAX_SUFFIX_LENGTH)
-    TRUNCATED_SUFFIX=$(echo "$TRUNCATED_SUFFIX" | sed 's/-$//')
+    TRUNCATED_SUFFIX="${TRUNCATED_SUFFIX%-}"
 
     ORIGINAL_BRANCH_NAME="$BRANCH_NAME"
     BRANCH_NAME="${FEATURE_NUM}-${TRUNCATED_SUFFIX}"
